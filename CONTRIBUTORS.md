@@ -3,6 +3,10 @@ CONTRIBUTORS
 
 (Reverse chronological)
 
+-   [BlackHoleFox](https://github.com/BlackHoleFox/) forked to
+    udp-broadcast-relay-rs and rewrote the entire codebase to Rust
+    for better error messages, better CLI argument parsing, and ease of
+    cross-development and cross-compilation.
 -   [Michael Morrison](https://github.com/mmorrisontx) forked to
     udp-broadcast-relay-redux, refactored the code, added support for
     FreeBSD / pfSense, multicast packets, and interface source address.

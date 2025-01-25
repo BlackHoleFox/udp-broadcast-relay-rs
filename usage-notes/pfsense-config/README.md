@@ -4,7 +4,7 @@ The particular issue that was being solved here was to allow [Syncthing][] to
 be discoverable between two network segments, a LAN and a WiFi network.
 Whilst pfSense provides the Avahi plugin, this doesn't help with [Syncthing][].
 
-However, the *udp-broadcast-relay-redux* tool allows arbitrary relaying of UDP
+However, the *udp-broadcast-relay-rs* tool allows arbitrary relaying of UDP
 packets between interfaces, and this helps to solve the problem.
 
 You'll need to be fairly comfortable with the command line to be able to do the
@@ -18,21 +18,19 @@ FreeBSD.
 to the world around it.  In order to make it work between subnets, the
 broadcast packet must be relayed.
 
-## Configuring *udp-broadcast-relay-redux* for pfSense 2.4
+## Configuring *udp-broadcast-relay-rs* for pfSense 2.4
 
 **Note. This is written from the perspective of a Linux user.  If you're
 already a BSD user then you'll already know much of this.  Skip to the
 "Configuring the router section".**
 
-Although make is installed on [pfSense][], very sensibly, gcc is not.  And you
-shouldn't even think of installing gcc on your router!  So a build machine is
-needed to actually build a compatible binary for the pfSense router.  pfSense
-2.4.2-p1 is based on
+A build machine is needed to actually build a compatible binary for the pfSense router.  
+pfSense 2.4.2-p1 is based on
 [FreeBSD 11.1-RELEASE-p6](https://www.freebsd.org/releases/11.1R/).
 So the first thing to do is to create a FreeBSD build machine and build the
-*udp-broadcast-relay-redux* tool.
+*udp-broadcast-relay-rs* tool.
 
-### Build the udp-broadcast-relay-redux tool
+### Build the udp-broadcast-relay-rs tool
 
 * Grab a [copy](https://download.freebsd.org/ftp/releases/amd64/amd64/ISO-IMAGES/11.1/FreeBSD-11.1-RELEASE-amd64-disc1.iso) of the FreeBSD disk.
 * Choose your favourite virtual machine manager, and install FreeBSD.
@@ -44,20 +42,20 @@ $ pkg search tmux  # useful to get pkg installed!
 $ pkg install tmux
 $ # and because tmux lets you have multiple windows
 $ tmux
-$ pkg install gcc
+$ pkg install rust
 $ pkg install git
-$ git clone https://github.com/udp-redux/udp-broadcast-relay-redux.git
+$ git clone https://github.com/BlackHoleFox/udp-broadcast-relay-rs.git
 $ # or the version that you are going to use.
 ```
 
 * Build the tool:
 
 ```shell
-$ make
+$ cargo build --release
 ```
 
-And that's it for the build.  Now copy the `udp-broadcast-relay-redux` file
-from the builder to your router at `/usr/local/bin/udp-broadcast-relay-redux`.
+And that's it for the build.  Now copy the `udp-broadcast-relay-rs` file
+from the builder to your router at `/usr/local/bin/udp-broadcast-relay-rs`.
 
 ### Configuring the router
 
@@ -67,7 +65,7 @@ when the router is rebooted.
 This is done with the init and configuration scripts in this directory.
 
 1. The init script: [/usr/local/etc/rc.d/udp-broadcast-relay.sh](udp-broadcast-relay.sh)
-2. The configuration file: [/usr/local/etc/udp-broadcast-relay-redux.conf](udp-broadcast-relay-redux.conf)
+2. The configuration file: [/usr/local/etc/udp-broadcast-relay-rs.conf](udp-broadcast-relay-rs.conf)
 3. And a modification to `/etc/rc.conf.local`.
 
 So place the `udp-broadcast-relay.sh` script into `/etc/local/etc/rc.d/`.
@@ -91,7 +89,7 @@ Make a change to `/etc/rc.conf.local` to add:
 # udp_broadcast_relay_enable=YES
 ```
 
-(without this, or set to `NO`, the `udp-broadcast-relay-redux` instance won't be started.)
+(without this, or set to `NO`, the `udp-broadcast-relay-rs` instance won't be started.)
 
 And then start the service using:
 
@@ -112,7 +110,7 @@ And to disable the service completely, either delete the
 ## Multiple instances
 
 It's possible to also configure multiple instances of
-`udp-broadcast-relay-redux` by duplicating the files of the single
+`udp-broadcast-relay-rs` by duplicating the files of the single
 instance above to create a new instance.  e.g. to create a second
 instance:
 
@@ -128,15 +126,15 @@ Then rename your second instance variables:
 # name="udp-broadcast-relay2"
 # rcvar="udp_broadcast_relay2_enable"
 ...
-conf_file="/usr/local/etc/udp-broadcast-relay-redux2.conf"
+conf_file="/usr/local/etc/udp-broadcast-relay-rs2.conf"
 ```
 
 Next do the same with the config file:
 
 ```shell
 # cd /usr/local/etc/
-# cp udp-broadcast-relay-redux.conf udp-broadcast-relay-redux2.conf
-# nano udp-broadcast-relay-redux2.conf
+# cp udp-broadcast-relay-rs.conf udp-broadcast-relay-rs2.conf
+# nano udp-broadcast-relay-rs2.conf
 ```
 
 And change to: `--id 2` and whatever other ports and settings you need in

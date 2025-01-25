@@ -1,2 +1,2 @@
-/.idea
-/*.iml
+/target
+.envrc

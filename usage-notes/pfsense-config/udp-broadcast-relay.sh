@@ -3,7 +3,7 @@
 # REQUIRE: NETWORKING
 # PROVIDE: udp-broadcast-relay
 
-# start/stop script for the github udp-redux/udp-broadcast-relay-redux
+# start/stop script for the github blackholefox/udp-broadcast-relay-rs
 
 . /etc/rc.subr
 
@@ -14,8 +14,8 @@ start_cmd="udp_broadcast_relay_start"
 stop_cmd="udp_broadcast_relay_stop"
 
 pidfile="/var/run/${name}.pid"
-cmd="/usr/local/bin/udp-broadcast-relay-redux"
-conf_file="/usr/local/etc/udp-broadcast-relay-redux.conf"
+cmd="/usr/local/bin/udp-broadcast-relay-rs"
+conf_file="/usr/local/etc/udp-broadcast-relay-rs.conf"
 
 load_rc_config ${name}
 
@@ -33,7 +33,7 @@ udp_broadcast_relay_start()
       echo "The \$udp_vars have not been set in the ${conf_file}"
       exit 1
     fi
-    echo "Starting UDP Broadcast Relay Redux. "
+    echo "Starting UDP Broadcast Relay"
 
     # The process will run until it is terminated. Although it has a fork option, it's
     # not possible to grab the pid and thus backgrounding it is more useful
@@ -48,7 +48,7 @@ udp_broadcast_relay_stop()
 {
 
   if [ -f $pidfile ]; then
-    echo -n "Stopping the UDP Broadcast Replay Redux ..."
+    echo -n "Stopping the UDP Broadcast Replay ..."
 
     pid=`cat ${pidfile}`
     kill ${pid}

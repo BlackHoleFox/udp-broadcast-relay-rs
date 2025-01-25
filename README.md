@@ -1,11 +1,4 @@
-ARCHIVED
-===
-
-This package still works perfectly fine to the best of my knowledge as of 2024, however I do not use it anymore personally and
-do not have time to follow issues / accept PRs. Feel free to fork as you see fit, following the license restrictions
-provided by this repo and the upstream.
-
-UDP Broadcast Relay for Linux / FreeBSD / pfSense
+UDP Broadcast Relay, in Rust, for Linux / FreeBSD / macOS / pfSense
 ==========================
 
 This program listens for packets on a specified UDP broadcast port. When
@@ -17,17 +10,21 @@ The primary purpose of this is to allow devices or game servers on separated
 local networks (Ethernet, WLAN, VLAN) that use udp broadcasts to find each
 other to do so.
 
+This is a rewrite (technically fork) of [udp-broadcast-relay-redux](https://github.com/udp-redux/udp-broadcast-relay-redux)
+in Rust for better cross compilation, better error messages, and better command-line handling. The behavior should be entirely
+backwards compatible with existing `redux` configurations/installations.
+
 INSTALL
 -------
 
-    make
-    cp udp-broadcast-relay-redux /some/where
+    cargo build --release
+    cp target/release/udp-broadcast-relay-rs /some/where
 
 USAGE
 -----
 
 ```
-./udp-broadcast-relay-redux \
+./udp-broadcast-relay-rs \
     -id id \
     --port <udp-port> \
     --dev eth0 \
@@ -37,7 +34,7 @@ USAGE
     [-t <overridden_target_ip>]
 ```
 
-- udp-broadcast-relay-redux must be run as root to be able to create a raw
+- udp-broadcast-relay-rs must be run as root to be able to create a raw
   socket (necessary) to send packets as though they originated from the
   original sender.
 - `id` must be unique number between instances. This is used to set the TTL of
@@ -56,21 +53,21 @@ EXAMPLE
 -------
 
 #### mDNS / Multicast DNS (Chromecast Discovery + Bonjour + More)
-`./udp-broadcast-relay-redux --id 1 --port 5353 --dev eth0 --dev eth1 --multicast 224.0.0.251 -s 1.1.1.1`
+`./udp-broadcast-relay-rs --id 1 --port 5353 --dev eth0 --dev eth1 --multicast 224.0.0.251 -s 1.1.1.1`
 
 (Chromecast requires broadcasts to originate from an address on its subnet)
 
 #### SSDP (Roku Discovery + More)
-`./udp-broadcast-relay-redux --id 1 --port 1900 --dev eth0 --dev eth1 --multicast 239.255.255.250`
+`./udp-broadcast-relay-rs --id 1 --port 1900 --dev eth0 --dev eth1 --multicast 239.255.255.250`
 
 #### Lifx Bulb Discovery
-`./udp-broadcast-relay-redux --id 1 --port 56700 --dev eth0 --dev eth1`
+`./udp-broadcast-relay-rs --id 1 --port 56700 --dev eth0 --dev eth1`
 
 #### Broadlink IR Emitter Discovery
-`./udp-broadcast-relay-redux --id 1 --port 80 --dev eth0 --dev eth1`
+`./udp-broadcast-relay-rs --id 1 --port 80 --dev eth0 --dev eth1`
 
 #### Warcraft 3 Server Discovery
-`./udp-broadcast-relay-redux --id 1 --port 6112 --dev eth0 --dev eth1`
+`./udp-broadcast-relay-rs --id 1 --port 6112 --dev eth0 --dev eth1`
 
 #### Relaying broadcasts between two LANs joined by tun-based VPN
 This example is from OpenWRT. Tun-based devices don't forward broadcast packets
@@ -79,21 +76,21 @@ This example is from OpenWRT. Tun-based devices don't forward broadcast packets
 
 Router 1 (source):
 
-`./udp-broadcast-relay-redux --id 1 --port 6112 --dev br-lan --dev tun0 -t 10.66.2.13`
+`./udp-broadcast-relay-rs --id 1 --port 6112 --dev br-lan --dev tun0 -t 10.66.2.13`
 
 (where 10.66.2.13 is the IP of router 2 over the tun0 link)
 
 Router 2 (target):
 
-`./udp-broadcast-relay-redux --id 2 --port 6112 --dev br-lan --dev tun0 -t 255.255.255.255`
+`./udp-broadcast-relay-rs --id 2 --port 6112 --dev br-lan --dev tun0 -t 255.255.255.255`
 
 #### HDHomerun Discovery
-`./udp-broadcast-relay-redux --id 1 --port 65001 --dev eth0 --dev eth1`
+`./udp-broadcast-relay-rs --id 1 --port 65001 --dev eth0 --dev eth1`
 
 Note about firewall rules
 ---
 
-If you are running udp-broadcast-relay-redux on a router, it can be an easy
+If you are running udp-broadcast-relay-rs on a router, it can be an easy
 way to relay broadcasts between VLANs. However, beware that these broadcasts
 will not establish a RELATED firewall relationship between the source and
 destination addresses.

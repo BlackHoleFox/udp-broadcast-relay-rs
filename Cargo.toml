@@ -1,0 +1,19 @@
+[package]
+name = "udp-broadcast-relay-rs"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = { version = "1" }
+clap = { version = "4.5.19", default-features = false, features = ["error-context", "env", "help", "suggestions", "std", "usage", "derive"] }
+socket2 = { version = "0.5.7", features = ["all"] }
+env_logger = { version = "0.11", default-features = false }
+log = "0.4"
+libc = "0.2"
+nix = { version = "0.29", features = ["ioctl"] }
+
+[profile.release]
+strip = true
+codegen-units = 1
+lto = true
+panic = "abort"
